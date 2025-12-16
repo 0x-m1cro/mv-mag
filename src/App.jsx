@@ -493,8 +493,10 @@ function AdminPanel({ onCreate }) {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!draft.title || !draft.summary) return
+    const draftId =
+      typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `admin-${Date.now()}`
     onCreate({
-      id: `admin-${Date.now()}`,
+      id: draftId,
       ...draft,
       readTime: 'Editor preview',
       tag: 'Founder upload',
@@ -581,10 +583,10 @@ function Footer() {
           <Link to="/about" className="hover:text-azure">
             About
           </Link>
-          <a href="https://example.com/privacy" className="hover:text-azure">
+          <a href="#privacy" className="hover:text-azure">
             Privacy
           </a>
-          <a href="https://example.com/terms" className="hover:text-azure">
+          <a href="#terms" className="hover:text-azure">
             Terms
           </a>
         </div>
