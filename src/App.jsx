@@ -494,7 +494,9 @@ function AdminPanel({ onCreate }) {
     e.preventDefault()
     if (!draft.title || !draft.summary) return
     const draftId =
-      typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `admin-${Date.now()}`
+      typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `admin-${Date.now()}-${Math.random().toString(16).slice(2)}`
     onCreate({
       id: draftId,
       ...draft,
@@ -823,7 +825,7 @@ function App() {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [activeArticle, setActiveArticle] = useState(() => magazineFeatures[0] ?? null)
+  const [activeArticle, setActiveArticle] = useState(null)
   const [savedIds, setSavedIds] = useState(() => JSON.parse(localStorage.getItem('mv-saved') || '[]'))
   const [history, setHistory] = useState(() => JSON.parse(localStorage.getItem('mv-history') || '[]'))
   const [adminDrafts, setAdminDrafts] = useState([])
@@ -832,6 +834,8 @@ function App() {
     () => [...adminDrafts, ...magazineFeatures, ...blogStories, ...itineraryCards, ...sustainabilityCards],
     [adminDrafts]
   )
+
+  const currentArticle = activeArticle ?? library[0] ?? null
 
   useEffect(() => {
     localStorage.setItem('mv-saved', JSON.stringify(savedIds))
@@ -857,9 +861,9 @@ function App() {
   const recommendations = useMemo(() => {
     const lastCategory = history[0]?.category
     if (!lastCategory) return library.slice(0, 3)
-    const next = library.filter((item) => item.category === lastCategory && item.id !== activeArticle?.id)
+    const next = library.filter((item) => item.category === lastCategory && item.id !== currentArticle?.id)
     return next.slice(0, 3).length ? next.slice(0, 3) : library.slice(0, 3)
-  }, [history, library, activeArticle])
+  }, [history, library, currentArticle])
 
   const handleRead = (article) => {
     setActiveArticle(article)
@@ -873,7 +877,7 @@ function App() {
   }
 
   const handleSave = (article) => {
-    setSavedIds((prev) => (prev.includes(article.id) ? prev : [...prev, article.id]))
+    setSavedIds((prev) => (prev.includes(article.id) ? prev.filter((id) => id !== article.id) : [...prev, article.id]))
   }
 
   const handleSubscribe = (plan) => {
@@ -920,7 +924,7 @@ function App() {
               onRead={handleRead}
               onSave={handleSave}
               savedIds={savedIds}
-              activeArticle={activeArticle}
+              activeArticle={currentArticle}
               isSubscribed={isSubscribed}
               onSubscribe={() => setIsModalOpen(true)}
               recommendations={recommendations}
