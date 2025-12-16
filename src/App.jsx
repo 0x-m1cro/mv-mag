@@ -821,7 +821,7 @@ function App() {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [activeArticle, setActiveArticle] = useState(magazineFeatures[0])
+  const [activeArticle, setActiveArticle] = useState(() => magazineFeatures[0] ?? null)
   const [savedIds, setSavedIds] = useState(() => JSON.parse(localStorage.getItem('mv-saved') || '[]'))
   const [history, setHistory] = useState(() => JSON.parse(localStorage.getItem('mv-history') || '[]'))
   const [adminDrafts, setAdminDrafts] = useState([])
