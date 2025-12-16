@@ -496,7 +496,9 @@ function AdminPanel({ onCreate }) {
     const draftId =
       typeof crypto !== 'undefined' && crypto.randomUUID
         ? crypto.randomUUID()
-        : `admin-${Date.now()}-${Math.random().toString(16).slice(2)}`
+        : typeof crypto !== 'undefined' && crypto.getRandomValues
+          ? Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, '0')).join('')
+          : `admin-${Date.now()}`
     onCreate({
       id: draftId,
       ...draft,
